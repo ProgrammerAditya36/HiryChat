@@ -17,3 +17,13 @@ export const ConversationTable = pgTable('conversation',{
     updatedAt:timestamp('updatedAt').defaultNow(),
     id:uuid('id').primaryKey().defaultRandom(),
 })
+
+
+export const MessageTable = pgTable('message',{
+    conversationId:uuid('conversationId').references(()=>ConversationTable.id),
+    sender:varchar('sender').references(()=>UserTable.phone),
+    receiver:varchar('receiver').references(()=>UserTable.phone),
+    message:varchar('message'),
+    createdAt:timestamp('createdAt').defaultNow(),
+    id:uuid('id').primaryKey().defaultRandom(),
+});   

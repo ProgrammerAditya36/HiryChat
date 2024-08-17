@@ -58,7 +58,6 @@ const Register = () => {
                 const downloadURL = await uploadFileToFirebase(
                     e.target.files[0],
                 );
-                console.log("File available at:", downloadURL);
                 setImgUrl(downloadURL); // Set the imgUrl state
                 await updateDatabase(downloadURL);
             } catch (error) {

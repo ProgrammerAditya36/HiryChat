@@ -6,7 +6,6 @@ import { createUser, getAllUsers as getAllUsersDB,getUser as getUserDB, updateUs
 
 export const registerUser = async (req: Request, res: Response) => {
     let { name, phone, password,imgUrl } = req.body;
-    console.log(req.body);
     try {
         let user = await getUserDB(phone);
         if (user) {

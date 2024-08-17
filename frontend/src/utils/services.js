@@ -5,7 +5,6 @@ export const baseUrl = "http://localhost:5000/api";
 
 export const registerUser = async (registerInfo) => {
     try {
-        console.log("Register info:", registerInfo);
         const response = await axios.post(
             `${baseUrl}/user/register`,
             registerInfo,
@@ -42,11 +41,9 @@ export const loginUser = async (loginInfo) => {
 
 export const getActiveChats = async (user_id) => {
     try {
-        console.log("User ID:", user_id);
         const response = await axios.get(
             `http://localhost:5000/api/user/connections?userId=${user_id}&status=active`,
         );
-        console.log("Active chats:", response);
         return response.data;
     } catch (err) {
         console.error("Error fetching active chats:", err);
@@ -77,9 +74,17 @@ export const setConversation = async (sender, receiver) => {
             sender: sender.phone,
             receiver: receiver.phone,
         });
-        console.log("Conversation:", response.data);
         return response.data;
     } catch (err) {
         console.error("Error setting conversation:", err);
+    }
+};
+
+export const newMessage = async (message) => {
+    try {
+        console.log("Message", message);
+        await axios.post(`${baseUrl}/user/message/new`);
+    } catch (err) {
+        console.error("Error sending message:", err);
     }
 };

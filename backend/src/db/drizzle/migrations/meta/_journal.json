@@ -22,6 +22,13 @@
       "when": 1723931693264,
       "tag": "0002_public_night_thrasher",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1723935018186,
+      "tag": "0003_lethal_ted_forrester",
+      "breakpoints": true
     }
   ]
 }

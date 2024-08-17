@@ -1,6 +1,6 @@
 import { eq, sql } from "drizzle-orm";
 import { db } from "./drizzle/db";
-import { UserTable, ConversationTable } from "./drizzle/schema";
+import { UserTable, ConversationTable,MessageTable } from "./drizzle/schema";
 export const createUser = async (name: string, phone: string, password: string, imgUrl: string) => {  
     return await db.insert(UserTable).values({
         phone,
@@ -42,4 +42,42 @@ export const createConversation = async (sender: string, receiver: string) => {
         members: [sender, receiver],
         message: "",
     });
+}
+
+export const createMessage = async (conversationId: string, sender: string, receiver: string, message: string) => {
+    try{
+    return await db.insert(MessageTable).values({
+        conversationId,
+        sender,
+        receiver,
+        message
+    });}
+    catch(err){
+        console.log(err);
+        return null;
+    }
+}
+
+export const updateCoversation = async (conversationId: string, message: string) => {
+    try{
+    await db.update(ConversationTable).set({
+        message
+    }).where(eq(ConversationTable.id, conversationId));
+    await db.update(ConversationTable).set({
+        updatedAt: new Date()
+    }).where(eq(ConversationTable.id, conversationId));
+    return true;
+    }
+    catch(err){
+        console.log(err);
+        return false;
+    }
+}
+
+
+export const getMessages = async (conversationId?: string|null|undefined) => {
+    if(conversationId === null||conversationId === undefined){
+        return await db.select().from(MessageTable);
+    }
+    return await db.select().from(MessageTable).where(eq(MessageTable.conversationId, conversationId));
 }

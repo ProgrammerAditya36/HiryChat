@@ -23,6 +23,8 @@ export const AuthContextProvider = ({ children }) => {
     const [allOtherUsers, setAllOtherUsers] = useState([]);
     const [selectedUser, setSelectedUser] = useState(null);
     const [conversation, setConversation] = useState(null);
+    const [messages, setMessages] = useState([]);
+    const [receiver, setReceiver] = useState(null);
     const [updateInfo, setUpdateInfo] = useState({
         name: user?.name || "",
         phone: user?.phone || "",
@@ -145,8 +147,9 @@ export const AuthContextProvider = ({ children }) => {
         setActiveChats(data);
     };
     const createConversation = async (receiver) => {
+        setReceiver(receiver);
         const data = await setConversationService(user, receiver);
-        console.log("Conversation:", data);
+        setConversation(data);
     };
     useEffect(() => {
         getActiveChats();
@@ -178,6 +181,9 @@ export const AuthContextProvider = ({ children }) => {
                 updateUser,
                 conversation,
                 createConversation,
+                messages,
+                setMessages,
+                receiver,
             }}
         >
             {children}
