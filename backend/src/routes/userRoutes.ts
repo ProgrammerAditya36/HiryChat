@@ -1,0 +1,11 @@
+import {Router} from 'express';
+const router = Router();  
+import { registerUser, loginUser, getUserByPhone, getUsers, getUid, createConnection, getConnections } from '../controllers/userController';
+router.post('/register',registerUser);
+router.post('/login',loginUser);
+router.get('/connections', getConnections);
+router.post('/createConnection',createConnection);
+router.get('/all',getUsers);
+router.get('/:phone',getUserByPhone);
+router.get('/uid/:phone',getUid);
+export default router;
