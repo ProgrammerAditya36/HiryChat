@@ -1,6 +1,6 @@
 import { eq, sql } from "drizzle-orm";
 import { db } from "./drizzle/db";
-import { UserTable } from "./drizzle/schema";
+import { UserTable, ConversationTable } from "./drizzle/schema";
 export const createUser = async (name: string, phone: string, password: string, imgUrl: string) => {  
     return await db.insert(UserTable).values({
         phone,
@@ -23,4 +23,20 @@ export const updateUser = async (phone: string, name: string, imgUrl: string) =>
         name,
         imgUrl
     }).where(eq(UserTable.phone, phone));
+}
+
+export const getCoversation = async (sender: string, receiver: string) => {
+    const conversations = await db.select().from(ConversationTable).where(sql`members @> ARRAY[${sender},${receiver}]`);
+    if(conversations.length === 0){
+        return null;
+    }
+    return conversations[0];
+}
+
+
+export const createConversation = async (sender: string, receiver: string) => {
+    await db.insert(ConversationTable).values({
+        members: [sender, receiver],
+        message: "",
+    });
 }

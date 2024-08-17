@@ -8,6 +8,13 @@
       "when": 1723884987892,
       "tag": "0000_broken_blazing_skull",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1723923029248,
+      "tag": "0001_hot_storm",
+      "breakpoints": true
     }
   ]
 }

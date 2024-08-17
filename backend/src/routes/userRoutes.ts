@@ -1,9 +1,11 @@
 import {Router} from 'express';
 const router = Router();  
 import { registerUser, loginUser,  getUsers,getUser, updateUser } from '../controllers/userController';
+import { newCoversation } from '../controllers/conversationController';
 router.post('/register',registerUser);
 router.post('/login',loginUser);
 router.get('/all',getUsers);
 router.get('/:phone',getUser);
 router.put('/:phone',updateUser);
+router.post('/conversation/add',newCoversation);
 export default router;
