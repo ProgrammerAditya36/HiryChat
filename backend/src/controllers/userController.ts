@@ -2,13 +2,13 @@
 import { Request, Response } from "express";
 import validator from "validator";
 import bcrypt from "bcrypt";
-import { findUserByPhone, createUser, findAllUsers, getConnections as getDBconnections, createConnection as createDBConnection, setOnline } from "../db/db";
+import { createUser, getAllUsers as getAllUsersDB,getUser as getUserDB, updateUser as updateUserDB } from "../db/db";
 
 export const registerUser = async (req: Request, res: Response) => {
-    const { name, phone, password,imgUrl } = req.body;
+    let { name, phone, password,imgUrl } = req.body;
     console.log(req.body);
     try {
-        let user = await findUserByPhone(phone);
+        let user = await getUserDB(phone);
         if (user) {
             res.status(401).send("User already exists");
             return;
@@ -22,14 +22,10 @@ export const registerUser = async (req: Request, res: Response) => {
             return;
         }
         const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
-        await createUser(name, phone, hashedPassword, imgUrl);
-        user = await findUserByPhone(phone);
-        if(!user){
-            res.status(500).send("Error in creating user");
-            return;
-        }
-        user = await setOnline(user.id);
+        password = await bcrypt.hash(password, salt);
+        await createUser(name, phone, password,imgUrl);
+        user = await getUserDB(phone);
+        
         res.json({ "user": user });
     } catch (err) {
         res.status(500).send("Error in finding user");
@@ -39,41 +35,14 @@ export const registerUser = async (req: Request, res: Response) => {
 export const loginUser = async (req: Request, res: Response) => {
     const { phone, password } = req.body;
     try {
-        let user = await findUserByPhone(phone);
+        let user = await getUserDB(phone);
         if (!user) {
             res.status(401).send("User does not exist");
             return;
         }
-        const isMatch = await bcrypt.compare(password, user.password);
+        const isMatch = await bcrypt.compare(password, user.password??"");
         if (!isMatch) {
             res.status(401).send("Invalid credentials");
-            return;
-        }
-        user = await setOnline(user.id);
-        res.json({ "user": user });
-    } catch (err) {
-        res.status(500).send("Error in finding user");
-    }
-}
-export const getUid = async (req: Request, res: Response) => {
-    const { phone } = req.params;
-    try {
-        let user = await findUserByPhone(phone);
-        if (!user) {
-            res.status(401).send("User does not exist");
-            return;
-        }
-        res.json( user.id );
-    } catch (err) {
-        res.status(500).send("Error in finding user");
-    }
-}
-export const getUserByPhone = async (req: Request, res: Response) => {
-    const { phone } = req.params;
-    try {
-        let user = await findUserByPhone(phone);
-        if (!user) {
-            res.status(401).send("User does not exist");
             return;
         }
         res.json({ "user": user });
@@ -82,33 +51,43 @@ export const getUserByPhone = async (req: Request, res: Response) => {
     }
 }
 
+export const getUser = async (req: Request, res: Response) => {
+    const phone = req.params.phone;
+    try {
+        let user = await getUserDB(phone);
+        if (!user) {
+            res.status(404).send("User not found");
+            return;
+        }
+        res.json(user);
+    } catch (err) {
+        res.status(500).send("Error in finding user");
+    }
+}
+
+
 export const getUsers = async (req: Request, res: Response) => {
     try {
-        let users = await findAllUsers();
+        let users = await getAllUsersDB();
         res.json(users);
     } catch (err) {
         res.status(500).send("Error in finding users");
     }
 }
 
-export const getConnections = async (req: Request, res: Response) => {
-    const { userId, status } = req.query;
+export const updateUser = async (req: Request, res: Response) => {
+    const phone = req.params.phone;
+    const { name, imgUrl } = req.body;
     try {
-        let connections =await getDBconnections(userId as string, status as string);
-    
-    }
-    catch (err) {
-        res.status(500).send("Error in finding connections");
-    }
-}
-
-export const createConnection = async (req: Request, res: Response) => {
-    const { from, to } = req.body;
-    try {
-        let connection = await createDBConnection(from, to);
-        res.json(connection);
-    }
-    catch (err) {
-        res.status(500).send(err);
+        let user = await getUserDB(phone);
+        if (!user) {
+            res.status(404).send("User not found");
+            return;
+        }
+        await updateUserDB(phone, name, imgUrl);
+        user = await getUserDB(phone);
+        res.json(user);
+    } catch (err) {
+        res.status(500).send("Error in finding user");
     }
 }
