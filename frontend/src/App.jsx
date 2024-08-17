@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Chat from "./pages/Chat";
+import Profile from "./pages/Profile";
 import { useContext } from "react";
 import { AuthContext } from "./context/authContext";
 
@@ -27,6 +28,10 @@ function App() {
                 <Route
                     path="/register"
                     element={<PublicRoute element={<Register />} />}
+                />
+                <Route
+                    path="/profile"
+                    element={<PrivateRoute element={<Profile />} />}
                 />
                 <Route path="*" element={<Navigate to="/" />} />
             </Routes>

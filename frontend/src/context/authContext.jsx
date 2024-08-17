@@ -4,6 +4,7 @@ import {
     loginUser as loginUserService,
     getActiveChats as getActiveChatsService,
     getAllUsers as getAllUsersService,
+    updateUser as updateUserService,
 } from "../utils/services";
 import { useNavigate } from "react-router-dom";
 
@@ -20,6 +21,11 @@ export const AuthContextProvider = ({ children }) => {
     const [allUsers, setAllUsers] = useState([]);
     const [allOtherUsers, setAllOtherUsers] = useState([]);
     const [selectedUser, setSelectedUser] = useState(null);
+    const [updateInfo, setUpdateInfo] = useState({
+        name: user?.name || "",
+        phone: user?.phone || "",
+        imgUrl: user?.imgUrl || "",
+    });
     useEffect(() => {
         getAllUsersService().then((data) => {
             setAllUsers(data);
@@ -27,7 +33,7 @@ export const AuthContextProvider = ({ children }) => {
         getAllUsersService().then((data) => {
             setAllOtherUsers(data.filter((u) => u.phone !== user?.phone));
         });
-    }, []);
+    }, [user]);
     const [registerInfo, setRegisterInfo] = useState({
         name: "",
         phone: "",
@@ -73,6 +79,34 @@ export const AuthContextProvider = ({ children }) => {
             setLoading(false);
         }
     }, [loginInfo, navigate]);
+    const updateUser = useCallback(async () => {
+        setLoading(true);
+        try {
+            const inpdata = {
+                name: updateInfo.name,
+                imgUrl: updateInfo.imgUrl,
+            };
+            const data = await updateUserService(user.phone, inpdata);
+            if (data) {
+                if (data.error) {
+                    console.error("Update failed:", data.error.message);
+                    return;
+                }
+                setUser(data.user);
+                localStorage.setItem("user", JSON.stringify(data.user));
+                setUpdateInfo({
+                    name: "",
+                    phone: "",
+                    imgUrl: "",
+                });
+                navigate("/");
+            }
+        } catch (err) {
+            console.error("Update failed:", err);
+        } finally {
+            setLoading(false);
+        }
+    }, [updateInfo, navigate]);
 
     const registerUser = useCallback(async () => {
         setLoading(true);
@@ -134,6 +168,9 @@ export const AuthContextProvider = ({ children }) => {
                 setRegisterError,
                 selectedUser,
                 setSelectedUser,
+                updateInfo,
+                setUpdateInfo,
+                updateUser,
             }}
         >
             {children}

@@ -61,3 +61,12 @@ export const getAllUsers = async () => {
         console.error("Error fetching all users:", err);
     }
 };
+
+export const updateUser = async (phone, data) => {
+    try {
+        const response = await axios.put(`${baseUrl}/user/${phone}`, data);
+        return response.data;
+    } catch (err) {
+        console.error("Error updating user:", err);
+    }
+};

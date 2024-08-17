@@ -3,6 +3,7 @@ import SidebarCard from "./SidebarCard";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { AuthContext } from "../context/authContext";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 const buttons = [
     {
         id: 1,
@@ -24,25 +25,53 @@ const buttons = [
 const Sidebar = () => {
     const [selected, setSelected] = useState(1);
     const [buttonSelected, setButtonSelected] = useState(1);
-    const { user, logout, activeChats, allOtherUsers, setSelectedUser } =
-        useContext(AuthContext);
+    const {
+        user,
+        logout,
+        activeChats,
+        allOtherUsers,
+        setSelectedUser,
+        allUsers,
+    } = useContext(AuthContext);
+    console.log("All Users", allUsers);
     console.log("Other Users", allOtherUsers);
+    const navigate = useNavigate();
+    const [showMenu, setShowMenu] = useState(false);
     return (
-        <div className="flex h-screen flex-col border-r border-secondary-bg">
-            <div className="sticky flex h-16 border-b border-secondary-bg px-3 py-2">
+        <div className="relative flex h-screen flex-col border-r border-secondary-bg">
+            <div className="sticky flex h-16 gap-3 border-b border-secondary-bg px-3 py-2">
                 <img
                     src={user?.imgUrl}
                     alt="profile"
-                    className="h-12 w-12 rounded-full"
+                    className="h-12 w-12 rounded-full object-cover"
                 />
-                <input
-                    type="text"
-                    placeholder="Search"
-                    className="h-12 w-full rounded-lg border-2 border-text-sender bg-secondary-bg px-3 py-2 focus:outline-none"
-                />
-                <button onClick={logout}>
-                    <MoreVertIcon />
-                </button>
+                <div className="flex flex-grow">
+                    <input
+                        type="text"
+                        placeholder="Search"
+                        className="h-12 w-full rounded-lg border-2 border-text-sender bg-secondary-bg px-3 py-2 focus:outline-none"
+                    />
+                    <button
+                        className="flex-grow-0"
+                        onClick={() => setShowMenu(!showMenu)}
+                    >
+                        <MoreVertIcon />
+                    </button>
+                </div>
+
+                {showMenu && (
+                    <div className="absolute right-2 top-14 flex flex-col gap-2 rounded-lg bg-white p-2 shadow-lg">
+                        <button className="w-full" onClick={logout}>
+                            Logout
+                        </button>
+                        <button
+                            className="w-full"
+                            onClick={() => navigate(`/profile`)}
+                        >
+                            Show Profile
+                        </button>
+                    </div>
+                )}
             </div>
             <div className="flex gap-2 bg-secondary-bg px-10 py-3">
                 {buttons.map((button) => {
@@ -65,8 +94,7 @@ const Sidebar = () => {
                 {allOtherUsers?.map((chat) => {
                     return (
                         <SidebarCard
-                            key={chat.id}
-                            selected={selected === chat.id}
+                            key={chat.phone}
                             name={chat.name}
                             message={chat.message}
                             img={chat.imgUrl}

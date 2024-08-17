@@ -8,13 +8,13 @@ const SidebarCard = ({ selected, name, message, img, id, onClick }) => {
     return (
         <div>
             <div
-                className={`flex h-16 cursor-pointer gap-3 border-t border-secondary-bg p-2 ${containerClasses}`}
+                className={`flex h-16 cursor-pointer items-center gap-3 border-b border-secondary-bg px-5 py-10 ${containerClasses}`}
                 onClick={onClick}
             >
                 <img
                     src={img}
                     alt="profile"
-                    className="h-12 w-12 rounded-full"
+                    className="h-11 w-11 rounded-full object-cover"
                 />
                 <div>
                     <h1 className="flex items-center gap-2 font-semibold">
