@@ -11,6 +11,7 @@ export const UserTable = pgTable('users',{
 
 export const ConversationTable = pgTable('conversation',{
     members:varchar('members').array(),
+    status:varchar('status').default('active'),
     message:varchar('message'),
     createdAt:timestamp('createdAt').defaultNow(),
     updatedAt:timestamp('updatedAt').defaultNow(),

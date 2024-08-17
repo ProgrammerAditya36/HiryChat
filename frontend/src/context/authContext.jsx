@@ -5,6 +5,7 @@ import {
     getActiveChats as getActiveChatsService,
     getAllUsers as getAllUsersService,
     updateUser as updateUserService,
+    setConversation as setConversationService,
 } from "../utils/services";
 import { useNavigate } from "react-router-dom";
 
@@ -21,6 +22,7 @@ export const AuthContextProvider = ({ children }) => {
     const [allUsers, setAllUsers] = useState([]);
     const [allOtherUsers, setAllOtherUsers] = useState([]);
     const [selectedUser, setSelectedUser] = useState(null);
+    const [conversation, setConversation] = useState(null);
     const [updateInfo, setUpdateInfo] = useState({
         name: user?.name || "",
         phone: user?.phone || "",
@@ -142,7 +144,10 @@ export const AuthContextProvider = ({ children }) => {
         const data = await getActiveChatsService(user_id);
         setActiveChats(data);
     };
-
+    const createConversation = async (receiver) => {
+        const data = await setConversationService(user, receiver);
+        console.log("Conversation:", data);
+    };
     useEffect(() => {
         getActiveChats();
     }, [user]);
@@ -171,6 +176,8 @@ export const AuthContextProvider = ({ children }) => {
                 updateInfo,
                 setUpdateInfo,
                 updateUser,
+                conversation,
+                createConversation,
             }}
         >
             {children}

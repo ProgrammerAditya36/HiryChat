@@ -17,7 +17,7 @@ const ChatHeader = () => {
     const [menu, setMenu] = useState(false);
     return (
         <>
-            <div className="flex items-center justify-between bg-secondary-bg">
+            <div className="flex items-center justify-between bg-secondary-bg px-5">
                 <div className="flex h-16 gap-3 p-2">
                     <img
                         src={user?.imgUrl}

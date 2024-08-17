@@ -70,3 +70,16 @@ export const updateUser = async (phone, data) => {
         console.error("Error updating user:", err);
     }
 };
+
+export const setConversation = async (sender, receiver) => {
+    try {
+        const response = await axios.post(`${baseUrl}/user/conversation/add`, {
+            sender: sender.phone,
+            receiver: receiver.phone,
+        });
+        console.log("Conversation:", response.data);
+        return response.data;
+    } catch (err) {
+        console.error("Error setting conversation:", err);
+    }
+};

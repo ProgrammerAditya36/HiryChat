@@ -24,15 +24,18 @@ export const updateUser = async (phone: string, name: string, imgUrl: string) =>
         imgUrl
     }).where(eq(UserTable.phone, phone));
 }
+export const getConversation = async (sender: string, receiver: string) => {
+    const conversations = await db
+        .select()
+        .from(ConversationTable)
+        .where(sql`members @> ARRAY[${sender}, ${receiver}]::varchar[]`);
 
-export const getCoversation = async (sender: string, receiver: string) => {
-    const conversations = await db.select().from(ConversationTable).where(sql`members @> ARRAY[${sender},${receiver}]`);
-    if(conversations.length === 0){
+    if (conversations.length === 0) {
         return null;
     }
-    return conversations[0];
-}
 
+    return conversations[0];
+};
 
 export const createConversation = async (sender: string, receiver: string) => {
     await db.insert(ConversationTable).values({

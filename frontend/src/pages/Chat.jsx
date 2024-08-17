@@ -9,17 +9,17 @@ const Chat = () => {
     const { selectedUser } = useContext(AuthContext);
     return (
         <div className="flex h-screen w-full">
-            <div className="w-1/3">
+            <div className="w-1/2 lg:w-1/3">
                 <Sidebar />
             </div>
             {selectedUser ? (
-                <div className="flex h-screen w-2/3 flex-col">
+                <div className="flex h-screen w-1/2 flex-col lg:w-2/3">
                     <ChatHeader />
                     <Messages />
                     <Footer />
                 </div>
             ) : (
-                <div className="flex h-screen w-2/3 items-center justify-center">
+                <div className="flex h-screen flex-grow items-center justify-center">
                     <h1 className="text-2xl text-gray-400">
                         Select a user to start chat
                     </h1>

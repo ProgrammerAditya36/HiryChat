@@ -32,13 +32,28 @@ const Sidebar = () => {
         allOtherUsers,
         setSelectedUser,
         allUsers,
+        createConversation,
     } = useContext(AuthContext);
-    console.log("All Users", allUsers);
-    console.log("Other Users", allOtherUsers);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [filteredUsers, setFilteredUsers] = useState(
+        allOtherUsers || allUsers || [],
+    );
+    useEffect(() => {
+        const filter = allOtherUsers.filter(
+            (user) =>
+                user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                user.phone.startsWith(searchQuery),
+        );
+        setFilteredUsers(filter);
+    }, [searchQuery, allOtherUsers]);
     const navigate = useNavigate();
     const [showMenu, setShowMenu] = useState(false);
+    const handleClick = async (user) => {
+        setSelectedUser(user);
+        await createConversation(user);
+    };
     return (
-        <div className="relative flex h-screen flex-col border-r border-secondary-bg">
+        <div className="relative flex h-screen flex-col border-r-2 border-gray-400 p-2">
             <div className="sticky flex h-16 gap-3 border-b border-secondary-bg px-3 py-2">
                 <img
                     src={user?.imgUrl}
@@ -49,6 +64,8 @@ const Sidebar = () => {
                     <input
                         type="text"
                         placeholder="Search"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
                         className="h-12 w-full rounded-lg border-2 border-text-sender bg-secondary-bg px-3 py-2 focus:outline-none"
                     />
                     <button
@@ -73,7 +90,7 @@ const Sidebar = () => {
                     </div>
                 )}
             </div>
-            <div className="flex gap-2 bg-secondary-bg px-10 py-3">
+            <div className="flex w-full justify-center gap-2 self-center overflow-x-auto bg-secondary-bg py-3">
                 {buttons.map((button) => {
                     return (
                         <button
@@ -91,15 +108,15 @@ const Sidebar = () => {
                 })}
             </div>
             <div className="flex flex-grow flex-col overflow-y-auto">
-                {allOtherUsers?.map((chat) => {
+                {filteredUsers?.map((user) => {
                     return (
                         <SidebarCard
-                            key={chat.phone}
-                            name={chat.name}
-                            message={chat.message}
-                            img={chat.imgUrl}
-                            id={chat.id}
-                            onClick={() => setSelectedUser(chat)}
+                            key={user.phone}
+                            name={user.name}
+                            message={user.message}
+                            img={user.imgUrl}
+                            id={user.id}
+                            onClick={() => handleClick(user)}
                         />
                     );
                 })}

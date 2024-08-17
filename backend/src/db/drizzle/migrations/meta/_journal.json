@@ -15,6 +15,13 @@
       "when": 1723923029248,
       "tag": "0001_hot_storm",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1723931693264,
+      "tag": "0002_public_night_thrasher",
+      "breakpoints": true
     }
   ]
 }
