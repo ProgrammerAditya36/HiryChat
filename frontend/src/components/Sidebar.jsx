@@ -24,11 +24,17 @@ const buttons = [
 const Sidebar = () => {
     const [selected, setSelected] = useState(1);
     const [buttonSelected, setButtonSelected] = useState(1);
-    const { user, logout, activeChats } = useContext(AuthContext);
-    console.log("Active chats:", activeChats);
+    const { user, logout, activeChats, allOtherUsers, setSelectedUser } =
+        useContext(AuthContext);
+    console.log("Other Users", allOtherUsers);
     return (
         <div className="flex h-screen flex-col border-r border-secondary-bg">
             <div className="sticky flex h-16 border-b border-secondary-bg px-3 py-2">
+                <img
+                    src={user?.imgUrl}
+                    alt="profile"
+                    className="h-12 w-12 rounded-full"
+                />
                 <input
                     type="text"
                     placeholder="Search"
@@ -56,16 +62,16 @@ const Sidebar = () => {
                 })}
             </div>
             <div className="flex flex-grow flex-col overflow-y-auto">
-                {activeChats?.map((chat) => {
+                {allOtherUsers?.map((chat) => {
                     return (
                         <SidebarCard
                             key={chat.id}
                             selected={selected === chat.id}
-                            onClick={() => setSelected(chat.id)}
                             name={chat.name}
                             message={chat.message}
-                            img={chat.image}
+                            img={chat.imgUrl}
                             id={chat.id}
+                            onClick={() => setSelectedUser(chat)}
                         />
                     );
                 })}

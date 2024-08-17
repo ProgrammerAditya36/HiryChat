@@ -3,8 +3,8 @@ import axios from "axios";
 import { AuthContext } from "../context/authContext";
 const ChatCard = () => {
     const [image, setImage] = useState("");
-    const [isOnline, setIsOnline] = useState(true);
-    const { user } = useContext(AuthContext);
+    const { selectedUser } = useContext(AuthContext);
+    const user = selectedUser;
     useEffect(() => {
         const fetchImage = async () => {
             const response = await axios.get("https://randomuser.me/api/");
@@ -24,7 +24,7 @@ const ChatCard = () => {
                 <div>
                     <h1 className="flex items-center gap-2 text-xl font-semibold">
                         {user?.name}
-                        {isOnline ? (
+                        {user?.status == "online" ? (
                             <span className="h-2 w-2 rounded-full bg-green-500"></span>
                         ) : null}
                     </h1>

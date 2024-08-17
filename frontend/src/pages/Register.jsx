@@ -12,6 +12,7 @@ const Register = () => {
         loading,
         setLoading,
         registerError,
+        setRegisterError,
     } = useContext(AuthContext);
     const [file, setFile] = useState(null);
     const [imgUrl, setImgUrl] = useState(""); // State for image URL
@@ -27,6 +28,7 @@ const Register = () => {
                 (snapshot) => {},
                 (error) => {
                     console.error("Upload error:", error);
+
                     reject(error);
                 },
                 async () => {
@@ -64,6 +66,7 @@ const Register = () => {
                     "An error occurred during file upload or database update:",
                     error,
                 );
+                setRegisterError("An error occurred during file upload");
             } finally {
                 setLoading(false);
             }
@@ -79,11 +82,13 @@ const Register = () => {
                 await registerUser();
             } catch (error) {
                 console.error("An error occurred during registration:", error);
+                setRegisterError("An error occurred during registration");
             } finally {
                 setLoading(false);
             }
         } else {
             console.error("No image URL found");
+            setRegisterError("Please upload an image");
         }
     };
 

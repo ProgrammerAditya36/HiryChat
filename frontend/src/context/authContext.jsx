@@ -3,6 +3,7 @@ import {
     registerUser as registerUserService,
     loginUser as loginUserService,
     getActiveChats as getActiveChatsService,
+    getAllUsers as getAllUsersService,
 } from "../utils/services";
 import { useNavigate } from "react-router-dom";
 
@@ -16,6 +17,17 @@ export const AuthContextProvider = ({ children }) => {
     const [loading, setLoading] = useState(false);
     const [registerError, setRegisterError] = useState(null);
     const [activeChats, setActiveChats] = useState([]);
+    const [allUsers, setAllUsers] = useState([]);
+    const [allOtherUsers, setAllOtherUsers] = useState([]);
+    const [selectedUser, setSelectedUser] = useState(null);
+    useEffect(() => {
+        getAllUsersService().then((data) => {
+            setAllUsers(data);
+        });
+        getAllUsersService().then((data) => {
+            setAllOtherUsers(data.filter((u) => u.phone !== user?.phone));
+        });
+    }, []);
     const [registerInfo, setRegisterInfo] = useState({
         name: "",
         phone: "",
@@ -84,6 +96,7 @@ export const AuthContextProvider = ({ children }) => {
             }
         } catch (err) {
             console.error("Registration failed:", err);
+            setRegisterError("Registration failed " + err);
         } finally {
             setLoading(false);
         }
@@ -116,6 +129,11 @@ export const AuthContextProvider = ({ children }) => {
                 logout,
                 activeChats,
                 getActiveChats,
+                allUsers,
+                allOtherUsers,
+                setRegisterError,
+                selectedUser,
+                setSelectedUser,
             }}
         >
             {children}

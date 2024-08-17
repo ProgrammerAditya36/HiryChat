@@ -52,3 +52,12 @@ export const getActiveChats = async (user_id) => {
         console.error("Error fetching active chats:", err);
     }
 };
+
+export const getAllUsers = async () => {
+    try {
+        const response = await axios.get(`${baseUrl}/user/all`);
+        return response.data;
+    } catch (err) {
+        console.error("Error fetching all users:", err);
+    }
+};
