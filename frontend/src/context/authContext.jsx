@@ -6,6 +6,7 @@ import {
     getAllUsers as getAllUsersService,
     updateUser as updateUserService,
     setConversation as setConversationService,
+    getMessages as getMessagesService, // Import the service
 } from "../utils/services";
 import { useNavigate } from "react-router-dom";
 
@@ -24,20 +25,14 @@ export const AuthContextProvider = ({ children }) => {
     const [selectedUser, setSelectedUser] = useState(null);
     const [conversation, setConversation] = useState(null);
     const [messages, setMessages] = useState([]);
+    const [allMessages, setAllMessages] = useState([]);
+    const [messagesChunkSize, setMessagesChunkSize] = useState(20); // Number of messages to load per chunk
     const [receiver, setReceiver] = useState(null);
     const [updateInfo, setUpdateInfo] = useState({
         name: user?.name || "",
         phone: user?.phone || "",
         imgUrl: user?.imgUrl || "",
     });
-    useEffect(() => {
-        getAllUsersService().then((data) => {
-            setAllUsers(data);
-        });
-        getAllUsersService().then((data) => {
-            setAllOtherUsers(data.filter((u) => u.phone !== user?.phone));
-        });
-    }, [user]);
     const [registerInfo, setRegisterInfo] = useState({
         name: "",
         phone: "",
@@ -48,6 +43,15 @@ export const AuthContextProvider = ({ children }) => {
         phone: "",
         password: "",
     });
+
+    useEffect(() => {
+        if (user) {
+            getAllUsersService().then((data) => {
+                setAllUsers(data);
+                setAllOtherUsers(data.filter((u) => u.phone !== user.phone));
+            });
+        }
+    }, [user]);
 
     const updateRegisterInfo = useCallback((info) => {
         setRegisterInfo(info);
@@ -83,6 +87,7 @@ export const AuthContextProvider = ({ children }) => {
             setLoading(false);
         }
     }, [loginInfo, navigate]);
+
     const updateUser = useCallback(async () => {
         setLoading(true);
         try {
@@ -146,11 +151,42 @@ export const AuthContextProvider = ({ children }) => {
         const data = await getActiveChatsService(user_id);
         setActiveChats(data);
     };
+
     const createConversation = async (receiver) => {
         setReceiver(receiver);
         const data = await setConversationService(user, receiver);
         setConversation(data);
+        return data;
     };
+
+    const loadMessages = async (conversationId) => {
+        const messages = await getMessagesService();
+        const data = messages?.filter(
+            (m) => m.conversationId === conversationId,
+        );
+        if (data.error) {
+            console.error("Failed to load messages:", data.error);
+            return;
+        }
+        setAllMessages(data); // Store all messages
+        setMessages(data.slice(0, messagesChunkSize)); // Load the first chunk initially
+    };
+
+    const fetchMoreMessages = () => {
+        setMessages((prevMessages) => {
+            const remainingMessages = allMessages.length - prevMessages.length;
+            const additionalMessages = Math.min(
+                remainingMessages,
+                messagesChunkSize,
+            );
+            const newMessages = allMessages.slice(
+                prevMessages.length,
+                prevMessages.length + additionalMessages,
+            );
+            return [...prevMessages, ...newMessages];
+        });
+    };
+
     useEffect(() => {
         getActiveChats();
     }, [user]);
@@ -182,8 +218,10 @@ export const AuthContextProvider = ({ children }) => {
                 conversation,
                 createConversation,
                 messages,
-                setMessages,
+                fetchMoreMessages,
+                loadMessages,
                 receiver,
+                setMessages,
             }}
         >
             {children}

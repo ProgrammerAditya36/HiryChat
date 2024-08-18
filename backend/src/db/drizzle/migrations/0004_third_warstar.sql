@@ -1,0 +1,1 @@
+ALTER TABLE "message" ADD COLUMN "type" varchar DEFAULT 'text';

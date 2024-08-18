@@ -25,5 +25,6 @@ export const MessageTable = pgTable('message',{
     receiver:varchar('receiver').references(()=>UserTable.phone),
     message:varchar('message'),
     createdAt:timestamp('createdAt').defaultNow(),
+    type:varchar("type").default("text"),
     id:uuid('id').primaryKey().defaultRandom(),
 });   

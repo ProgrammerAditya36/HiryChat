@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { getConversation,createConversation } from '../db/db';
+import { getConversation,createConversation, getConversations } from '../db/db';
 export const newCoversation = async (req: Request, res: Response) => {
     try{
         const {sender, receiver} = req.body;
@@ -14,5 +14,14 @@ export const newCoversation = async (req: Request, res: Response) => {
     }
     catch(err){
         res.status(500).send("Error in creating conversation " + err as string);
+    }
+}
+
+export const allConversations = async (req: Request, res: Response) => {
+    try {
+        let conversations = await getConversations();
+        res.json(conversations);
+    } catch (err) {
+        res.status(500).send("Error in finding conversations" + err as string);
     }
 }

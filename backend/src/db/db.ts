@@ -37,6 +37,9 @@ export const getConversation = async (sender: string, receiver: string) => {
     return conversations[0];
 };
 
+export const getConversations = async () => {
+    return await db.select().from(ConversationTable);
+}
 export const createConversation = async (sender: string, receiver: string) => {
     await db.insert(ConversationTable).values({
         members: [sender, receiver],
@@ -51,6 +54,21 @@ export const createMessage = async (conversationId: string, sender: string, rece
         sender,
         receiver,
         message
+    });}
+    catch(err){
+        console.log(err);
+        return null;
+    }
+}
+
+export const createDocument = async (conversationId: string, sender: string, receiver: string, message: string, type:string) => {
+    try{
+    return await db.insert(MessageTable).values({
+        conversationId,
+        sender,
+        receiver,
+        message,
+        type
     });}
     catch(err){
         console.log(err);

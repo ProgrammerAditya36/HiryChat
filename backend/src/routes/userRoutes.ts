@@ -1,16 +1,19 @@
 import {Router} from 'express';
 const router = Router();  
 import { registerUser, loginUser,  getUsers,getUser, updateUser } from '../controllers/userController';
-import { newCoversation } from '../controllers/conversationController';
-import { newMessage, getMessage, getMessagesAll } from '../controllers/messageController';
+import { newCoversation, allConversations } from '../controllers/conversationController';
+import { newMessage, getMessage, getMessagesAll, newImage, newVideo, newFile } from '../controllers/messageController';
 router.post('/register',registerUser);
 router.post('/login',loginUser);
 router.get('/all',getUsers);
 router.get('/:phone',getUser);
 router.put('/:phone',updateUser);
 router.post('/conversation/add',newCoversation);
+router.get('/conversation/all',allConversations);
 router.post('/message/new', newMessage);
 router.get('/messages/all', getMessagesAll);
-
 router.get('/message/:conversationId', getMessage);
+router.post('/image/new', newImage);   
+router.post('/video/new', newVideo); 
+router.post('file/new', newFile);
 export default router;

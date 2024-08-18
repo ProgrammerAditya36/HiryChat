@@ -2,6 +2,7 @@ import React, { useContext, useState } from "react";
 import { AuthContext } from "../context/authContext";
 import { useNavigate } from "react-router-dom";
 import { uploadBytesResumable, getDownloadURL, ref } from "firebase/storage";
+import { upload } from "../utils/services.js";
 import { storage } from "../firebaseConfig.js"; // Import your Firebase storage config
 
 const Register = () => {
@@ -20,25 +21,11 @@ const Register = () => {
 
     // Function to upload file to Firebase Storage and get download URL
     const uploadFileToFirebase = async (file) => {
-        return new Promise((resolve, reject) => {
-            const storageRef = ref(storage, `images/${file.name}`);
-            const uploadTask = uploadBytesResumable(storageRef, file);
-            uploadTask.on(
-                "state_changed",
-                (snapshot) => {},
-                (error) => {
-                    console.error("Upload error:", error);
-
-                    reject(error);
-                },
-                async () => {
-                    const downloadURL = await getDownloadURL(
-                        uploadTask.snapshot.ref,
-                    );
-                    resolve(downloadURL);
-                },
-            );
-        });
+        const downloadUrl = await upload(file);
+        if (downloadUrl) {
+            return downloadUrl;
+        }
+        throw new Error("Error uploading file to Firebase");
     };
 
     // Function to update the database with the registration information

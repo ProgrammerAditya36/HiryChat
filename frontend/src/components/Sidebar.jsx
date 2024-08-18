@@ -4,6 +4,8 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { AuthContext } from "../context/authContext";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { getMessages } from "../utils/services";
+
 const buttons = [
     {
         id: 1,
@@ -22,6 +24,7 @@ const buttons = [
         name: "Blocked",
     },
 ];
+
 const Sidebar = () => {
     const [selected, setSelected] = useState(1);
     const [buttonSelected, setButtonSelected] = useState(1);
@@ -33,11 +36,15 @@ const Sidebar = () => {
         setSelectedUser,
         allUsers,
         createConversation,
+        messages,
+        setMessages,
     } = useContext(AuthContext);
+    console.log(messages);
     const [searchQuery, setSearchQuery] = useState("");
     const [filteredUsers, setFilteredUsers] = useState(
         allOtherUsers || allUsers || [],
     );
+
     useEffect(() => {
         const filter = allOtherUsers.filter(
             (user) =>
@@ -46,11 +53,30 @@ const Sidebar = () => {
         );
         setFilteredUsers(filter);
     }, [searchQuery, allOtherUsers]);
+
     const navigate = useNavigate();
     const [showMenu, setShowMenu] = useState(false);
-    const handleClick = async (user) => {
-        setSelectedUser(user);
-        await createConversation(user);
+    const handleClick = async (selectedUser) => {
+        try {
+            setMessages([]); // Clear messages before loading new ones
+            setSelectedUser(selectedUser);
+
+            // Create a conversation and get the conversation object
+            const newConversation = await createConversation(selectedUser);
+
+            // Fetch messages for the selected conversation
+            const messages = await getMessages();
+
+            // Filter messages based on the new conversation's ID
+            const filteredMessages = messages.filter(
+                (m) => m.conversationId === newConversation.id,
+            );
+
+            // Set the filtered messages to state
+            setMessages(filteredMessages);
+        } catch (error) {
+            console.error("Error handling click:", error);
+        }
     };
     return (
         <div className="relative flex h-screen flex-col border-r-2 border-gray-400 p-2">
@@ -83,7 +109,7 @@ const Sidebar = () => {
                         </button>
                         <button
                             className="w-full"
-                            onClick={() => navigate(`/profile`)}
+                            onClick={() => navigate("/profile")}
                         >
                             Show Profile
                         </button>
@@ -113,7 +139,6 @@ const Sidebar = () => {
                         <SidebarCard
                             key={user.phone}
                             name={user.name}
-                            message={user.message}
                             img={user.imgUrl}
                             id={user.id}
                             onClick={() => handleClick(user)}

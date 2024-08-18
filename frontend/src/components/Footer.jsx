@@ -3,28 +3,45 @@ import AttachFileIcon from "@mui/icons-material/AttachFile";
 import SendIcon from "@mui/icons-material/Send";
 import { AuthContext } from "../context/authContext";
 import { newMessage as sendNewMessage } from "../utils/services";
+import { upload, sendFileToDB } from "../utils/services";
 const Footer = () => {
     const { messages, setMessages, user, conversation, receiver } =
         useContext(AuthContext);
     const [inputValue, setInputValue] = useState("");
-    console.log(messages);
+    const [file, setFile] = useState(null);
     const sendMessage = async () => {
-        try {
-            if (inputValue === "") return;
-            const newMessage = {
+        if (inputValue === "" && !file) return;
+        if (file) {
+            const data = {
                 sender: user.phone,
                 receiver: receiver.phone,
-                message: inputValue,
-                time: new Date().toLocaleTimeString(),
+                url: file,
                 conversationId: conversation.id,
-                type: "text",
             };
-            await sendNewMessage(newMessage);
-            setMessages([...messages, newMessage]);
-        } catch (err) {
-            console.error("Error sending message:", err);
-        } finally {
-            setInputValue("");
+            try {
+                await sendFileToDB(data);
+                setFile(null);
+            } catch (err) {
+                console.error("Error sending file:", err);
+            } finally {
+                setFile(null);
+            }
+        } else {
+            try {
+                if (inputValue === "") return;
+                const newMessage = {
+                    sender: user.phone,
+                    receiver: receiver.phone,
+                    message: inputValue,
+                    conversationId: conversation.id,
+                };
+                await sendNewMessage(newMessage);
+                setMessages([...messages, newMessage]);
+            } catch (err) {
+                console.error("Error sending message:", err);
+            } finally {
+                setInputValue("");
+            }
         }
     };
     return (
@@ -43,10 +60,27 @@ const Footer = () => {
                         }}
                         className="w-full rounded-lg bg-inherit px-4 py-2 focus:outline-none"
                     />
-                    <div className="flex gap-2 text-primary-bg">
-                        <button>
-                            <AttachFileIcon />
-                        </button>
+                    <div className="flex items-center gap-2 text-primary-bg">
+                        <div className="relative">
+                            <label
+                                htmlFor="upload"
+                                className="block cursor-pointer"
+                            >
+                                <AttachFileIcon />
+                            </label>
+                            <input
+                                type="file"
+                                className="absolute hidden"
+                                id="upload"
+                                onChange={async (e) => {
+                                    const file = e.target.files[0];
+                                    const fileUrl = await upload(file);
+                                    setFile(fileUrl);
+                                    setInputValue(fileUrl);
+                                }}
+                            />
+                        </div>
+
                         <button
                             className="rounded-lg bg-red-200 p-3"
                             onClick={sendMessage}

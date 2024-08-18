@@ -21,6 +21,11 @@ const Login = () => {
                                 phone: e.target.value,
                             })
                         }
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                loginUser();
+                            }
+                        }}
                     />
                     <input
                         type="password"
@@ -33,6 +38,11 @@ const Login = () => {
                                 password: e.target.value,
                             })
                         }
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                loginUser();
+                            }
+                        }}
                     />
                     <button
                         className="rounded-lg bg-red-500 py-2 text-white"
